@@ -1,0 +1,583 @@
+<div class="">
+    <div class="breadcrumb">
+        <h1>Reservation</h1>
+        <ul>
+            <li><a href="#/reservation/lot">Lot</a></li>
+        </ul>
+    </div>
+
+    <div class="separator-breadcrumb border-top"></div>
+
+    <div class="row">
+        <div class="col-xl-8 col-lg-12" *ngIf="mapLoaded">
+            <app-map [lots2]="lots2" (lotClickEvent)="openModal(reserveModal, $event)"></app-map>
+        </div>
+        <div class="col-xl-4 col-lg-8 col-md 6">
+            <app-lot-table (lotClickEvent)="openModal(reserveModal, $event)"></app-lot-table>
+        </div>
+    </div>
+
+</div>
+
+<ng-template #reserveModal let-modal>
+    <div class="modal-header">
+        <h4 class="modal-title" id="modal-basic-title">Lot Reservation</h4>
+        <button type="button" class="close" aria-label="Close" (click)="modal.dismiss('Cross click')">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+    <ul ngbNav #reservationTab="ngbNav" class="nav-tabs nav-justified" [(activeId)]="active"
+        (navChange)="onNavChange($event)">
+        <li ngbNavItem title="Lot Info" [ngbNavItem]="1">
+            <a ngbNavLink>Lot Info</a>
+            <ng-template ngbNavContent>
+                <div class="row">
+                    <div class="col-6">
+                        <div class="mb-3">
+                            <label for="reservation-block-number" class="form-label">Block #</label>
+                            <input type="text"
+                                   class="form-control"
+                                   id="reservation-block-number"
+                                   name="reservation-block-number"
+                                   value="{{lot.blockNumber}}"
+                            [disabled]="true">
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <div class="mb-3">
+                            <label for="reservation-lot-number" class="form-label">Lot #</label>
+                            <input type="text"
+                                   class="form-control"
+                                   id="reservation-lot-number"
+                                   name="reservation-lot-number"
+                                   value="{{lot.lotNumber}}" [disabled]="true">
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <div class="mb-3">
+                            <label for="reservation-block-number" class="form-label">Lot Size</label>
+                            <input type="text"
+                                   class="form-control"
+                                   value="{{lot.size}}m²"
+                                   disabled>
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <div class="mb-3">
+                            <label for="reservation-block-number" class="form-label">Lot Price</label>
+                            <input type="text"
+                                   class="form-control"
+                                   value="{{lot.size * lot.price | currency:'PHP':'symbol'}}"
+                                   [disabled]="true">
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-6">
+                        <div class="mb-3">
+                            <label for="reservation-block-number" class="form-label">Lot Type</label>
+                            <input type="text"
+                                   class="form-control"
+                                   value="{{lot.type}}"
+                                   disabled>
+                        </div>
+                    </div>
+                </div>
+            </ng-template>
+        </li>
+        <li ngbNavItem title="House Info" [ngbNavItem]="2">
+            <a ngbNavLink>House Info</a>
+            <ng-template ngbNavContent>
+                <div class="row">
+                    <div class="col-6 needs-validation">
+                        <label for="reservation-lot-number" class="form-label">House Type</label>
+                        <select class="form-select"
+                                id="reservation-model"
+                                name="reservation-model"
+                                (ngModelChange)="setHouse($event)"
+                                [(ngModel)]="houseModelSelected"
+                                required>
+                            <option selected>Select Model</option>
+                            <option *ngFor="let house of lot.houses">{{house}}</option>
+                        </select>
+                        <div *ngIf="errors.includes('houseModel')">
+                            <p class="text-danger">Please select a house model</p>
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <label for="reservation-lot-number" class="form-label">Price</label>
+                        <input type="text" class="form-control" id="reservation-price" name="reservation-price"
+                               value="{{(house.basePrice + ((lot.size * lot.price)) - (house.lotArea * 10000)) - (lot.size * lot.price) | currency:'PHP':'symbol'}}"
+                               disabled *ngIf="house.pictures.length >= 1">
+                        <input type="text" class="form-control" value="{{0 | currency: 'PHP' : 'symbol'}}" disabled
+                               *ngIf="house.pictures.length === 0">
+                    </div>
+                </div>
+                <div class="row my-3">
+                    <div class="col-6">
+                        <label for="reservation-lot-number" class="form-label">Lot Area</label>
+                        <input type="text" class="form-control" value="{{house.lotArea}}m²" disabled>
+                    </div>
+                    <div class="col-6">
+                        <label for="reservation-lot-number" class="form-label">Floor Area</label>
+                        <input type="text" class="form-control" value="{{house.floorArea}}m²" disabled>
+                    </div>
+                </div>
+                <div class="row my-3" *ngIf="house.pictures.length >= 1">
+                    <div class="col-12">
+                        <label for="reservation-lot-number" class="form-label">Details</label>
+                        <div class="row">
+                            <h4>
+                                <span class="col-auto m-1 badge badge-pill badge-outline-secondary p-2 mr-1"
+                                      *ngFor="let detail of house.details">{{detail.detail}}
+                                </span>
+                            </h4>
+                        </div>
+                    </div>
+                </div>
+                <div class="row my-3" *ngIf="house.pictures.length >= 1">
+                    <div class="col-12">
+                        <label for="reservation-lot-number" class="form-label">Gallery</label>
+                        <ngb-carousel [interval]="3000" [pauseOnHover]="true" [pauseOnFocus]="true">
+                            <ng-template ngbSlide *ngFor="let picture of house.pictures">
+                                <div class="carousel-caption">
+                                    <h3>{{picture.description}}</h3>
+                                </div>
+                                <a href="" target="_blank" rel="nofollow noopener noreferrer">
+                                    <div class="picsum-img-wrapper">
+                                        <img src="https://rockville-fs.s3.ap-southeast-2.amazonaws.com/house{{picture.image}}"
+                                             alt="{{picture.description}}"/>
+                                    </div>
+                                </a>
+                            </ng-template>
+                        </ngb-carousel>
+                    </div>
+                </div>
+            </ng-template>
+        </li>
+        <li ngbNavItem title="Personal Info" [ngbNavItem]="3">
+            <a ngbNavLink>Personal Info</a>
+
+            <ng-template ngbNavContent>
+                <div class="row">
+                    <div class="col">
+                        <div class="mb-3">
+                            <label for="reservation-first-name" class="form-label">First Name</label>
+                            <input type="text"
+                                   class="form-control"
+                                   id="reservation-first-name"
+                                   name="reservation-first-name"
+                                   [(ngModel)]="firstName"
+                            >
+                            <div *ngIf="errors.includes('firstName')">
+                                <p class="text-danger">Required</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col">
+                        <div class="mb-3">
+                            <label for="reservation-lot-number" class="form-label">Middle Name</label>
+                            <input type="text"
+                                   class="form-control"
+                                   id="reservation-middle-name"
+                                   name="reservation-middle-name"
+                                   [(ngModel)]="middleName">
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-5">
+                        <div class="mb-3">
+                            <label for="reservation-lot-number" class="form-label">Last Name</label>
+                            <input type="text"
+                                   class="form-control"
+                                   id="reservation-last-name"
+                                   name="reservation-last-name"
+                                   [(ngModel)]="lastName">
+                            <div *ngIf="errors.includes('lastName')">
+                                <p class="text-danger">Required</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-1">
+                        <div class="mb-3">
+                            <label for="reservation-lot-number" class="form-label">Suffix</label>
+                            <input type="text"
+                                   class="form-control"
+                                   id="reservation-suffix"
+                                   name="reservation-suffix"
+                                   [(ngModel)]="suffix">
+                        </div>
+                    </div>
+                    <div class="col-6 mb-3">
+                        <label for="reservation-gender" class="form-label">Gender</label>
+                        <select class="form-select"
+                                id="reservation-gender"
+                                name="reservation-gender"
+                                [ngModel]="gender"
+                                (ngModelChange)="setGender($event)">
+                            <option selected>Select Gender</option>
+                            <option value="Male">Male</option>
+                            <option value="Female">Female</option>
+                        </select>
+                        <div *ngIf="errors.includes('gender')">
+                            <p class="text-danger">Required</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+
+                    <div class="col mb-3">
+                        <label for="reservation-gender" class="form-label">Status</label>
+                        <select class="form-select"
+                                id="reservation-status"
+                                name="reservation-status"
+                                (ngModelChange)="setMaritalStatus($event)"
+                                [ngModel]="maritalStatus">
+                            <option selected>Select Status</option>
+                            <option value="Single">Single</option>
+                            <option value="Married">Married</option>
+                            <option value="Divorced">Divorced</option>
+                        </select>
+                        <div *ngIf="errors.includes('maritalStatus')">
+                            <p class="text-danger">Required</p>
+                        </div>
+                    </div>
+                    <div class="col mb-3">
+                        <label for="reservation-gender" class="form-label">Type </label>
+                        <select class="form-select"
+                                id="reservation-customer-type"
+                                name="reservation-customer-type"
+                                (ngModelChange)="setCustomerType($event)"
+                                [ngModel]="customerType">
+                            <option selected>Select Type</option>
+                            <option value="REG">Regular</option>
+                            <option value="OFW">OFW</option>
+                        </select>
+                        <div *ngIf="errors.includes('customerType')">
+                            <p class="text-danger">Required</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col">
+                        <div class="mb-3">
+                            <label for="reservation-email" class="form-label">Email</label>
+                            <input type="email"
+                                   class="form-control"
+                                   id="reservation-email"
+                                   name="reservation-email"
+                                   [(ngModel)]="email">
+                        </div>
+                        <div *ngIf="errors.includes('email')">
+                            <p class="text-danger">Required</p>
+                        </div>
+                    </div>
+                    <div class="col">
+                        <div class="mb-3">
+                            <label for="reservation-mobile" class="form-label">Mobile Number</label>
+                            <input type="text"
+                                   class="form-control"
+                                   id="reservation-mobile"
+                                   name="reservation-mobile"
+                                   [(ngModel)]="mobileNumber">
+                        </div>
+                        <div *ngIf="errors.includes('mobileNumber')">
+                            <p class="text-danger">Required</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col">
+                        <div class="mb-3">
+                            <label for="reservation-address" class="form-label">Address</label>
+                            <textarea
+                                    class="form-control"
+                                    id="reservation-address"
+                                    name="reservation-address"
+                                    [(ngModel)]="address">
+                            </textarea>
+                            <div *ngIf="errors.includes('address')">
+                                <p class="text-danger">Required</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </ng-template>
+        </li>
+        <li ngbNavItem title="Upload Files" [ngbNavItem]="4">
+            <a ngbNavLink>Upload Files</a>
+
+            <ng-template ngbNavContent>
+                <div class="row" *ngIf="customerType === 'OFW' || customerType === 'REG' ">
+                    <form [formGroup]="reservationFilesForm">
+                        <div class="col-12" *ngFor="let reservationFile of reservationFiles.data">
+                            <div class="mb-3">
+                                <label for="reservation-block-number" class="form-label"
+                                       *ngIf="reservationFile.requirementCode ==='RES_FEE' ||reservationFile.requirementCode ==='GOV_ID'">{{reservationFile.requirement.name}}</label>
+                                <input type="file" class="form-control"
+                                       id="{{setReservationId(reservationFile.requirementCode)}}"
+                                       name="{{setReservationId(reservationFile.requirementCode)}}"
+                                       *ngIf="reservationFile.requirementCode ==='RES_FEE'"
+                                       formControlName="reservationFee"
+                                       (change)="getImage($event, 'reservationFee')"
+                                >
+                                <div class="col-md-6 mx-auto py-3" *ngIf="reservationFile.requirementCode ==='RES_FEE'">
+                                    <div class="card bg-dark text-white o-hidden mb-4">
+                                        <img class="card-img"
+                                             [src]="reservationFeePath || 'http://placehold.it/400x600'"
+                                             alt="Reservation Fee">
+                                        <div class="card-img-overlay">
+                                            <div class="text-center pt-4">
+                                                <h5 class="card-title mb-2 text-white">Reservation Fee</h5>
+                                                <div class="separator border-top mb-2"></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div *ngIf="errors.includes('reservationFee') && reservationFile.requirementCode ==='RES_FEE'">
+                                    <p class="text-danger">Required</p>
+                                </div>
+                                <input type="file"
+                                       class="form-control"
+                                       id="{{setReservationId(reservationFile.requirementCode)}}"
+                                       name="{{setReservationId(reservationFile.requirementCode)}}"
+                                       *ngIf="reservationFile.requirementCode ==='GOV_ID'"
+                                       formControlName="govId"
+                                       (change)="getImage($event, 'govId')">
+                                <div class="col-md-6 mx-auto py-3" *ngIf="reservationFile.requirementCode ==='GOV_ID'">
+                                    <div class="card bg-dark text-white o-hidden mb-4">
+                                        <img class="card-img" [src]="govIdPath || 'http://placehold.it/400x600'"
+                                             alt="Government Id">
+                                        <div class="card-img-overlay">
+                                            <div class="text-center pt-4">
+                                                <h5 class="card-title mb-2 text-white">Government Id</h5>
+                                                <div class="separator border-top mb-2"></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div *ngIf="errors.includes('govId') && reservationFile.requirementCode ==='GOV_ID'">
+                                    <p class="text-danger">Required</p>
+                                </div>
+                                <!--                            <input type="file" class="form-control" id="{{setReservationId(reservationFile.requirementCode)}}" name="{{setReservationId(reservationFile.requirementCode)}}" *ngIf="reservationFile.requirementCode !=='GOV_ID' && reservationFile.requirementCode !=='RES_FEE'">-->
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </ng-template>
+        </li>
+        <li ngbNavItem title="Upload Files" [ngbNavItem]="5">
+            <a ngbNavLink>Agent Info</a>
+
+            <ng-template ngbNavContent>
+                <div class="row">
+                    <div class="col-12">
+                        <div class="mb-3">
+                            <label for="reservation-block-number" class="form-label">Agent Name</label>
+                            <input type="text"
+                                   class="form-control"
+                                   id="reservation-agent-name"
+                                   name="reservation-agent-name"
+                                   [(ngModel)]="agentName">
+                            <div *ngIf="errors.includes('agentName')">
+                                <p class="text-danger">Required</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </ng-template>
+        </li>
+        <li ngbNavItem title="Summary" [ngbNavItem]="6">
+            <a ngbNavLink>Summary</a>
+
+            <ng-template ngbNavContent>
+                <div class="row">
+                    <div class="col-12">
+                        <label for="reservation-block-number" class="form-label">Customer Name</label>
+                        <input type="text"
+                               class="form-control mb-3"
+                               value="{{firstName}} {{middleName}} {{lastName}} {{suffix}}" disabled>
+                    </div>
+                    <div class="col-4">
+                        <label for="reservation-block-number" class="form-label">Gender</label>
+                        <input type="text"
+                               class="form-control mb-3"
+                               value="{{gender}}" disabled>
+                    </div>
+                    <div class="col-4">
+                        <label for="reservation-block-number" class="form-label">Status</label>
+                        <input type="text"
+                               class="form-control mb-3"
+                               value="{{maritalStatus}}" disabled>
+                    </div>
+                    <div class="col-4">
+                        <label for="reservation-block-number" class="form-label">Type</label>
+                        <input type="text"
+                               class="form-control mb-3"
+                               value="{{customerType}}" disabled>
+                    </div>
+                    <div class="col-6">
+                        <label for="reservation-block-number" class="form-label">Email Address</label>
+                        <input type="text"
+                               class="form-control mb-3"
+                               value="{{email}}" disabled>
+                    </div>
+                    <div class="col-6">
+                        <label for="reservation-block-number" class="form-label">Mobile Number</label>
+                        <input type="text"
+                               class="form-control mb-3"
+                               value="{{mobileNumber}}" disabled>
+                    </div>
+                    <div class="col-12">
+                        <label for="reservation-block-number" class="form-label">Address</label>
+                        <input type="text"
+                               class="form-control mb-3"
+                               value="{{address}}" disabled>
+                    </div>
+                </div>
+                <div class="separator-breadcrumb border-top"></div>
+                <div class="row">
+                    <div class="col-6">
+                        <div class="card bg-dark text-white o-hidden mb-4">
+                            <img class="card-img" [src]="govIdPath || 'http://placehold.it/400x600'"
+                                 alt="Reservation Fee">
+                            <div class="card-img-overlay">
+                                <div class="text-center pt-4">
+                                    <h5 class="card-title mb-2 text-white">Government ID</h5>
+                                    <div class="separator border-top mb-2"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <div class="card bg-dark text-white o-hidden mb-4">
+                            <img class="card-img" [src]="reservationFeePath || 'http://placehold.it/400x600'"
+                                 alt="Reservation Fee">
+                            <div class="card-img-overlay">
+                                <div class="text-center pt-4">
+                                    <h5 class="card-title mb-2 text-white">Reservation Fee</h5>
+                                    <div class="separator border-top mb-2"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="separator-breadcrumb border-top"></div>
+                <div class="row">
+                    <div class="col-6">
+                        <div class="mb-3">
+                            <label for="reservation-block-number" class="form-label">Block #</label>
+                            <input type="text"
+                                   class="form-control mb-3"
+                                   value="{{lot.blockNumber}}"
+                                   disabled>
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <div class="mb-3">
+                            <label for="reservation-lot-number" class="form-label">Lot #</label>
+                            <input type="text"
+                                   class="form-control mb-3"
+                                   value="{{lot.lotNumber}}" disabled>
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <div class="mb-3">
+                            <label for="reservation-block-number" class="form-label">Lot Size</label>
+                            <input type="text"
+                                   class="form-control mb-3"
+                                   value="{{lot.size}}m²"
+                                   disabled>
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <div class="mb-3">
+                            <label for="reservation-block-number" class="form-label">Lot Price</label>
+                            <input type="text"
+                                   class="form-control mb-3"
+                                   value="{{lot.size * lot.price | currency:'PHP':'symbol'}}"
+                                   disabled>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-6">
+                        <div class="mb-3">
+                            <label for="reservation-block-number" class="form-label">Lot Type</label>
+                            <input type="text"
+                                   class="form-control mb-3"
+                                   value="{{lot.type}}"
+                                   disabled>
+                        </div>
+                    </div>
+                </div>
+                <div class="separator-breadcrumb border-top"></div>
+                <div class="row">
+                    <div class="col-6 needs-validation">
+                        <label for="reservation-lot-number" class="form-label">House Type</label>
+                        <input type="text" class="form-control" value="{{houseModelSelected}}" disabled>
+                    </div>
+                    <div class="col-6">
+                        <label for="reservation-lot-number" class="form-label">Price</label>
+                        <input type="text" class="form-control"
+                               value="{{(house.basePrice + ((lot.size * lot.price)) - (house.lotArea * 10000)) - (lot.size * lot.price) | currency:'PHP':'symbol'}}"
+                               disabled>
+                    </div>
+                </div>
+                <div class="row my-3">
+                    <div class="col-6">
+                        <label for="reservation-lot-number" class="form-label">Lot Area</label>
+                        <input type="text" class="form-control" value="{{house.lotArea}}m²" disabled>
+                    </div>
+                    <div class="col-6">
+                        <label for="reservation-lot-number" class="form-label">Floor Area</label>
+                        <input type="text" class="form-control" value="{{house.floorArea}}m²" disabled>
+                    </div>
+                </div>
+                <div class="row my-3" *ngIf="house.pictures.length >= 1">
+                    <div class="col-12">
+                        <label for="reservation-lot-number" class="form-label">Details</label>
+                        <div class="row">
+                            <h4>
+                                <span class="col-auto m-1 badge badge-pill badge-outline-secondary p-2 mr-1"
+                                      *ngFor="let detail of house.details">{{detail.detail}}
+                                </span>
+                            </h4>
+                        </div>
+                    </div>
+                </div>
+                <div class="separator-breadcrumb border-top"></div>
+                <div class="row">
+                    <div class="col-12">
+                        <label for="reservation-block-number" class="form-label">Agent Name</label>
+                        <input type="text"
+                               class="form-control mb-3"
+                               value="{{agentName}}" disabled>
+                    </div>
+                </div>
+            </ng-template>
+        </li>
+    </ul>
+    <div [ngbNavOutlet]="reservationTab"></div>
+    <div class="row p-3">
+        <div class="col-4">
+            <input type="text" class="form-control"
+                   value="Total : {{(house.basePrice + ((lot.size * lot.price)) - (house.lotArea * 10000)) | currency:'PHP':'symbol'}}"
+                   disabled>
+        </div>
+        <div class="col-4"></div>
+        <div class="col-4 btn-group">
+            <button type="button" class="btn btn-danger" (click)="selectTab(active - 1)" *ngIf="active > 1">
+                Previous
+            </button>
+            <button type="button" class="btn btn-outline-primary" (click)="selectTab(active + 1)" *ngIf="active < 6">
+                Next
+            </button>
+            <button type="button" class="btn btn-outline-success" *ngIf="active === 6"
+                    (click)="submitReservationForm()">Reserve
+            </button>
+        </div>
+    </div>
+</ng-template>

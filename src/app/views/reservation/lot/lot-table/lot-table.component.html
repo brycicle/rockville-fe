@@ -1,0 +1,55 @@
+<div class="card mb-4">
+    <div class="card-body">
+        <div class="">
+            <h5 class="card-title">Lots</h5>
+            <div class="separator-breadcrumb border-top"></div>
+
+            <div class="row">
+                <div class="col-md-4">
+                    <div class="form-group">
+                        <input id="email" placeholder="Search Lots" [formControl]="searchControl" class="form-control form-control-rounded" type="email">
+                    </div>
+                </div>
+                <div class="col-md-12">
+                        <ngx-datatable
+                                style="height: 70vh; box-shadow: none"
+                                class="material fullscreen"
+                                [columnMode]="'force'"
+                                [headerHeight]="50"
+                                [footerHeight]="50"
+                                [rowHeight]="60"
+                                [scrollbarV]="true"
+                                [rows]="filteredProducts">
+                            <ngx-datatable-column name="blockName" [width]="300">
+                                <ng-template ngx-datatable-header-template>
+                                    Block - Lot
+                                </ng-template>
+                                <ng-template let-row="row" ngx-datatable-cell-template>
+                                    {{row.blockName}} - {{row.lotName}} ({{row.blockLotName}})
+                                </ng-template>
+                            </ngx-datatable-column>
+                            <ngx-datatable-column name="size">
+                                <ng-template ngx-datatable-header-template>
+                                    Size
+                                </ng-template>
+                                <ng-template let-row="row" ngx-datatable-cell-template>
+                                    {{row.size}}m²
+                                </ng-template>
+                            </ngx-datatable-column>
+                            <ngx-datatable-column name="status">
+                                <ng-template ngx-datatable-header-template>
+                                    Status
+                                </ng-template>
+                            </ngx-datatable-column>
+                            <ngx-datatable-column name="status">
+                                <ng-template ngx-datatable-header-template></ng-template>
+                                <ng-template let-row="row" ngx-datatable-cell-template>
+                                    <button class="btn btn-sm btn-outline-primary mb-1" type="button" (click)="showLot(row.id)" *ngIf="row.status === 'Available'">Reserve</button>
+                                </ng-template>
+                            </ngx-datatable-column>
+                        </ngx-datatable>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

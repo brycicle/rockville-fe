@@ -1,0 +1,54 @@
+/*
+ *
+ *   GULL - Angular Bootstrap Admin Template
+ *
+ *
+*/
+
+@import 'perfect-scrollbar/css/perfect-scrollbar.css';
+@import '@swimlane/ngx-datatable/index.css';
+@import '@swimlane/ngx-datatable/themes/material.css';
+@import '@swimlane/ngx-datatable/assets/icons.css';
+@import 'ngx-toastr/toastr';
+@import "angular-calendar/scss/angular-calendar.scss";
+@import 'highlight.js/styles/github.css';
+@import "../iconsmind/iconsmind.css";
+@import 'variables';
+
+// @import 'themes/lite-blue';
+@import 'themes/lite-purple';
+@import 'bootstrap/scss/bootstrap.scss';
+@import "bootstrap-rtl.scss";
+@import 'globals/globals';
+
+#lot-map-container {
+  height: 80vh !important;
+}
+
+#lot-map {
+  height: 100%;
+  //width: 100%;
+  //overflow: scroll;
+  g {
+    cursor: pointer;
+    &:hover {
+      .lot-item-shape-available {
+        fill: $primary;
+      }
+      .lot-item-shape-reserved, text {
+        cursor: auto;
+      }
+    }
+    .lot-item-shape-available {
+      stroke: $success;
+    }
+    .lot-item-shape-reserved {
+      stroke: $danger;
+    }
+    polygon {
+      fill: transparent;
+      stroke-width: 1;
+      transition: ease-in-out 300ms;
+    }
+  }
+}

@@ -1,0 +1,56 @@
+<div class="card mb-4">
+    <div class="card-body" id="lot-map-container">
+        <h5 class="card-title">Lot Map</h5>
+        <div class="separator-breadcrumb border-top"></div>
+        <div #lotContainer id="lot-map">
+            <svg #svgContainer
+                 [attr.height]="lotContainer.offsetHeight-10"
+                 [attr.width]="lotContainer.offsetWidth-10"
+                 *ngIf="mapLoaded"
+                 (window:resize)="onResize($event)"
+                 [attr.viewBox]="viewBoxData"
+            >
+                <g *ngFor="let lot of lots3">
+<!--                    <polygon class="lot-item lot-item-shape-{{lot.status.toLowerCase()}}" [attr.points]="lot.coordinates"-->
+<!--                             fill="green" (click)="open(reserveModal,lot.lotId)"/>-->
+<!--                    <text class="lot-item" [attr.x]="lot.centerX" [attr.y]="lot.centerY" text-anchor="middle" fill="black"-->
+<!--                          font-size="1rem" (click)="open(reserveModal,lot.lotId)">-->
+                        <polygon class="lot-item lot-item-shape-{{lot.status.toLowerCase()}}" [attr.points]="lot.coordinates"
+                                 fill="green" (click)="showLot(lot.lotId)"/>
+                        <text class="lot-item" [attr.x]="lot.centerX" [attr.y]="lot.centerY" text-anchor="middle" fill="black"
+                              font-size=".8rem" (click)="showLot(lot.lotId)">
+                        B{{lot.blockNumber.replace('Block ', '')}}L{{lot.lotNumber.replace('Lot  ', '')}}
+                    </text>
+                </g>
+            </svg>
+        </div>
+    </div>
+</div>
+
+
+<ng-template #reserveModal let-modal>
+    <div class="modal-header">
+        <h4 class="modal-title" id="modal-basic-title">Modal With large content</h4>
+        <button type="button" class="close" aria-label="Close" (click)="modal.dismiss('Cross click')">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+    <div class="modal-body">
+        <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Aspernatur blanditiis ipsam voluptate eveniet. Ipsum, vero similique?
+            Lorem ipsum dolor sit amet consectetur adipisicing elit. Aspernatur blanditiis ipsam voluptate eveniet. Ipsum, vero similique?</p>
+        <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Aspernatur blanditiis ipsam voluptate eveniet. Ipsum, vero similique?
+            Lorem ipsum dolor sit amet consectetur adipisicing elit. Aspernatur blanditiis ipsam voluptate eveniet. Ipsum, vero similique?</p>
+        <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Aspernatur blanditiis ipsam voluptate eveniet. Ipsum, vero similique?
+            Lorem ipsum dolor sit amet consectetur adipisicing elit. Aspernatur blanditiis ipsam voluptate eveniet. Ipsum, vero similique?</p>
+
+        <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Aspernatur blanditiis ipsam voluptate eveniet. Ipsum, vero similique?
+            Lorem ipsum dolor sit amet consectetur adipisicing elit. Aspernatur blanditiis ipsam voluptate eveniet. Ipsum, vero similique?</p>
+        <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Aspernatur blanditiis ipsam voluptate eveniet. Ipsum, vero similique?
+            Lorem ipsum dolor sit amet consectetur adipisicing elit. Aspernatur blanditiis ipsam voluptate eveniet. Ipsum, vero similique?</p>
+        <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Aspernatur blanditiis ipsam voluptate eveniet. Ipsum, vero similique?
+            Lorem ipsum dolor sit amet consectetur adipisicing elit. Aspernatur blanditiis ipsam voluptate eveniet. Ipsum, vero similique?</p>
+    </div>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-outline-dark btn-rounded" (click)="modal.close('ok')">Ok</button>
+    </div>
+</ng-template>

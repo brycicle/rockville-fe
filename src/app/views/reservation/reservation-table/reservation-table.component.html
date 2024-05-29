@@ -1,0 +1,613 @@
+<div class="">
+    <div class="breadcrumb">
+        <h1>Reservation</h1>
+        <ul>
+            <li><a href="#/reservation/table">Table</a></li>
+        </ul>
+    </div>
+
+    <div class="separator-breadcrumb border-top"></div>
+
+    <div class="row">
+        <div class="col-md-12">
+            <div class="row">
+                <div class="col-md-3">
+                    <div class="card mb-4">
+                        <div class="card-body">
+                            <div class="card-title">Lot Filters</div>
+                            <div class="row">
+                                <div class="col-6 mb-3">
+                                    <label class="switch switch-primary me-3">
+                                        <span>Block/Lot</span>
+                                        <input type="checkbox" [(ngModel)]="blockLotFilter">
+                                        <span class="slider"></span>
+                                    </label>
+                                </div>
+                                <div class="col-6 mb-3">
+                                    <label class="switch switch-primary me-3">
+                                        <span>Type</span>
+                                        <input type="checkbox" [(ngModel)]="lotType">
+                                        <span class="slider"></span>
+                                    </label>
+                                </div>
+                                <div class="col-6 mb-3">
+                                    <label class="switch switch-primary me-3">
+                                        <span>Size</span>
+                                        <input type="checkbox" [(ngModel)]="lotSize">
+                                        <span class="slider"></span>
+                                    </label>
+                                </div>
+                                <div class="col-6 mb-3">
+                                    <label class="switch switch-primary me-3">
+                                        <span>Price</span>
+                                        <input type="checkbox" [(ngModel)]="lotPrice">
+                                        <span class="slider"></span>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card mb-4">
+                        <div class="card-body">
+                            <div class="card-title">House Filters</div>
+                            <div class="row">
+                                <div class="col-6 mb-3">
+                                    <label class="switch switch-primary me-3">
+                                        <span>Name</span>
+                                        <input type="checkbox" [(ngModel)]="house">
+                                        <span class="slider"></span>
+                                    </label>
+                                </div>
+                                <div class="col-6 mb-3">
+                                    <label class="switch switch-primary me-3">
+                                        <span>Price</span>
+                                        <input type="checkbox" [(ngModel)]="housePrice">
+                                        <span class="slider"></span>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card mb-4">
+                        <div class="card-body">
+                            <div class="card-title">Customer Filters</div>
+                            <div class="row">
+                                <div class="col-6 mb-3">
+                                    <label class="switch switch-primary me-3">
+                                        <span>Name</span>
+                                        <input type="checkbox" [(ngModel)]="clientName">
+                                        <span class="slider"></span>
+                                    </label>
+                                </div>
+                                <div class="col-6 mb-3">
+                                    <label class="switch switch-primary me-3">
+                                        <span>Type</span>
+                                        <input type="checkbox" [(ngModel)]="customerType">
+                                        <span class="slider"></span>
+                                    </label>
+                                </div>
+                                <div class="col-6 mb-3">
+                                    <label class="switch switch-primary me-3">
+                                        <span>Email</span>
+                                        <input type="checkbox" [(ngModel)]="email">
+                                        <span class="slider"></span>
+                                    </label>
+                                </div>
+                                <div class="col-6 mb-3">
+                                    <label class="switch switch-primary me-3">
+                                        <span>Contact</span>
+                                        <input type="checkbox" [(ngModel)]="contactNumber">
+                                        <span class="slider"></span>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card mb-4">
+                        <div class="card-body">
+                            <div class="card-title">Other Filters</div>
+                            <div class="row">
+                                <div class="col-6 mb-3">
+                                    <label class="switch switch-primary me-3">
+                                        <span>Agent</span>
+                                        <input type="checkbox" [(ngModel)]="agentName">
+                                        <span class="slider"></span>
+                                    </label>
+                                </div>
+                                <div class="col-6 mb-3">
+                                    <label class="switch switch-primary me-3">
+                                        <span>Created By</span>
+                                        <input type="checkbox" [(ngModel)]="createdBy">
+                                        <span class="slider"></span>
+                                    </label>
+                                </div>
+                                <div class="col-6 mb-3">
+                                    <label class="switch switch-primary me-3">
+                                        <span>Total</span>
+                                        <input type="checkbox" [(ngModel)]="totalPrice">
+                                        <span class="slider"></span>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="form-group">
+                <input id="email" placeholder="Search Reservations" [formControl]="searchControl"
+                       class="form-control form-control-rounded" type="email">
+            </div>
+        </div>
+        <div class="col-md-12">
+            <div class="card o-hidden">
+                <ngx-datatable
+                        style="height: 500px; box-shadow: none"
+                        class="material fullscreen"
+                        [columnMode]="'force'"
+                        [headerHeight]="50"
+                        [footerHeight]="50"
+                        [rowHeight]="60"
+                        [scrollbarV]="true"
+                        [rows]="filteredReservations">
+                    <ngx-datatable-column name="lotBlockName" *ngIf="blockLotFilter">
+                        <ng-template ngx-datatable-header-template>
+                            Block # - Lot #
+                        </ng-template>
+                        <ng-template let-row="row" ngx-datatable-cell-template>
+                            {{row.lot.blockName}} - {{row.lot.lotName}}
+                        </ng-template>
+                    </ngx-datatable-column>
+                    <ngx-datatable-column name="lotType" *ngIf="lotType">
+                        <ng-template ngx-datatable-header-template>
+                            Lot Type
+                        </ng-template>
+                        <ng-template let-row="row" ngx-datatable-cell-template>
+                            {{row.lot.type}}
+                        </ng-template>
+                    </ngx-datatable-column>
+                    <ngx-datatable-column name="lotSize" *ngIf="lotSize">
+                        <ng-template ngx-datatable-header-template>
+                            Lot Size
+                        </ng-template>
+                        <ng-template let-row="row" ngx-datatable-cell-template>
+                            {{row.lot.size}}m²
+                        </ng-template>
+                    </ngx-datatable-column>
+                    <ngx-datatable-column name="lotPrice" *ngIf="lotPrice">
+                        <ng-template ngx-datatable-header-template>
+                            Lot Price
+                        </ng-template>
+                        <ng-template let-row="row" ngx-datatable-cell-template>
+                            {{row.lotPrice | currency: 'PHP' : 'symbol'}}
+                        </ng-template>
+                    </ngx-datatable-column>
+                    <ngx-datatable-column name="house" *ngIf="house" [width]="30">
+                        <ng-template ngx-datatable-header-template>
+                            House
+                        </ng-template>
+                        <ng-template let-row="row" ngx-datatable-cell-template>
+                            {{row.house.name}}
+                        </ng-template>
+                    </ngx-datatable-column>
+                    <ngx-datatable-column name="housePrice" *ngIf="housePrice">
+                        <ng-template ngx-datatable-header-template>
+                            House Price
+                        </ng-template>
+                        <ng-template let-row="row" ngx-datatable-cell-template>
+                            {{row.housePrice | currency: 'PHP' : 'symbol'}}
+                        </ng-template>
+                    </ngx-datatable-column>
+                    <ngx-datatable-column name="totalPrice" *ngIf="totalPrice">
+                        <ng-template ngx-datatable-header-template>
+                            Total Price
+                        </ng-template>
+                        <ng-template let-row="row" ngx-datatable-cell-template>
+                            {{row.housePrice + row.lotPrice | currency: 'PHP' : 'symbol'}}
+                        </ng-template>
+                    </ngx-datatable-column>
+                    <ngx-datatable-column name="clientName" *ngIf="clientName" [width]="350">
+                        <ng-template ngx-datatable-header-template>
+                            Client Name
+                        </ng-template>
+                        <ng-template let-row="row" ngx-datatable-cell-template>
+                            {{row.customer.firstName + ' ' + row.customer.middleName + ' ' + row.customer.lastName + ' ' + row.customer.suffix}}
+                        </ng-template>
+                    </ngx-datatable-column>
+                    <ngx-datatable-column name="clientName" *ngIf="customerType">
+                        <ng-template ngx-datatable-header-template>
+                            Type
+                        </ng-template>
+                        <ng-template let-row="row" ngx-datatable-cell-template>
+                            {{row.customer.type}}
+                        </ng-template>
+                    </ngx-datatable-column>
+                    <ngx-datatable-column name="clientName" *ngIf="email">
+                        <ng-template ngx-datatable-header-template>
+                            Email
+                        </ng-template>
+                        <ng-template let-row="row" ngx-datatable-cell-template>
+                            {{row.customer.emailAddress}}
+                        </ng-template>
+                    </ngx-datatable-column>
+                    <ngx-datatable-column name="clientName" *ngIf="contactNumber">
+                        <ng-template ngx-datatable-header-template>
+                            Contact
+                        </ng-template>
+                        <ng-template let-row="row" ngx-datatable-cell-template>
+                            {{row.customer.contactNumber}}
+                        </ng-template>
+                    </ngx-datatable-column>
+                    <ngx-datatable-column name="agentName" *ngIf="agentName">
+                        <ng-template ngx-datatable-header-template>
+                            Agent Name
+                        </ng-template>
+                        <ng-template let-row="row" ngx-datatable-cell-template>
+                            {{row.agentName}}
+                        </ng-template>
+                    </ngx-datatable-column>
+                    <ngx-datatable-column name="agentName" *ngIf="createdBy" [width]="50">
+                        <ng-template ngx-datatable-header-template>
+                            Created By
+                        </ng-template>
+                        <ng-template let-row="row" ngx-datatable-cell-template>
+                            {{row.createdBy}}
+                        </ng-template>
+                    </ngx-datatable-column>
+                    <ngx-datatable-column name="expiration">
+                        <ng-template ngx-datatable-header-template>
+                            Reservation Expiration
+                        </ng-template>
+                        <ng-template let-row="row" ngx-datatable-cell-template>
+                            {{row.expiration * 1000 | date:'MMMM-dd-yyyy'}}
+                        </ng-template>
+                    </ngx-datatable-column>
+                    <ngx-datatable-column name="status">
+                        <ng-template ngx-datatable-header-template></ng-template>
+                        <ng-template let-row="row" ngx-datatable-cell-template>
+                            <button class="btn btn-sm btn-outline-primary mb-1 w-100" type="button" (click)="openModal(reservationDetailsModal, row.id)">View Details</button>
+                        </ng-template>
+                    </ngx-datatable-column>
+                </ngx-datatable>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<ng-template #reservationDetailsModal let-modal>
+    <div class="modal-header">
+        <h4 class="modal-title" id="modal-basic-title">Reservation Details</h4>
+        <button type="button" class="close" aria-label="Close" (click)="modal.dismiss('Cross click')">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+    <div class="modal-body user-profile o-hidden">
+        <div class="card-body nav-center">
+            <ul ngbNav #nav="ngbNav" class="nav-tabs nav-justified">
+                <li ngbNavItem title="About">
+                    <h3><a ngbNavLink>About</a></h3>
+                    <ng-template ngbNavContent>
+                        <h4>Personal Information</h4>
+                        <hr>
+                        <div class="row">
+                            <div class="col-md-4 col-6">
+                                <div class="mb-4">
+                                    <p class="text-primary mb-1"><i class="i-Add-User text-16 me-1"></i> Name</p>
+                                    <span>{{selectedReservation.customer.firstName + ' ' + selectedReservation.customer.middleName + ' ' + selectedReservation.customer.lastName + ' ' + selectedReservation.customer.suffix}}</span>
+                                </div>
+                                <div class="mb-4">
+                                    <p class="text-primary mb-1"><i class="i-Edit-Map text-16 me-1"></i> Address</p>
+                                    <span>{{selectedReservation.customer.address}}</span>
+                                </div>
+                                <div class="mb-4">
+                                    <p class="text-primary mb-1"><i class="i-MaleFemale text-16 me-1"></i> Gender</p>
+                                    <span>{{selectedReservation.customer.gender}}</span>
+                                </div>
+                            </div>
+                            <div class="col-md-4 col-6">
+                                <div class="mb-4">
+                                    <p class="text-primary mb-1"><i class="i-MaleFemale text-16 me-1"></i> Email</p>
+                                    <span>{{selectedReservation.customer.emailAddress}}</span>
+                                </div>
+                                <div class="mb-4">
+                                    <p class="text-primary mb-1"><i class="i-Telephone text-16 me-1"></i> Mobile Number</p>
+                                    <span>{{selectedReservation.customer.contactNumber}}</span>
+                                </div>
+                            </div>
+                            <div class="col-md-4 col-6">
+                                <div class="mb-4">
+                                    <p class="text-primary mb-1"><i class="i-Love-User text-16 me-1"></i> Marital Status</p>
+                                    <span>{{selectedReservation.customer.maritalStatus}}</span>
+                                </div>
+                                <div class="mb-4">
+                                    <p class="text-primary mb-1"><i class="i-Engineering text-16 me-1"></i> Type</p>
+                                    <span>{{selectedReservation.customer.type}}</span>
+                                </div>
+                            </div>
+                        </div>
+                        <hr>
+                        <h4>House/Lot Info</h4>
+                        <hr>
+                        <div class="row">
+                            <div class="col-md-2 col-sm-4 col-6 text-center">
+                                <i class="i-Home1 text-32 text-primary"></i>
+                                <p class="text-16 mt-1"><b>House</b></p>
+                                <p class="text-16 mt-1">{{selectedReservation.house.name}}</p>
+                            </div>
+                            <div class="col-md-2 col-sm-4 col-6 text-center">
+                                <i class="i-Full-Screen text-32 text-primary"></i>
+                                <p class="text-16 mt-1"><b>Floor Area</b></p>
+                                <p class="text-16 mt-1">{{selectedReservation.house.floorArea}}m²</p>
+                            </div>
+                            <div class="col-md-2 col-sm-4 col-6 text-center">
+                                <i class="i-Map2 text-32 text-primary"></i>
+                                <p class="text-16 mt-1"><b>Block - Lot</b></p>
+                                <p class="text-16 mt-1">{{selectedReservation.lot.blockName}} - {{selectedReservation.lot.lotName}}</p>
+                            </div>
+                            <div class="col-md-2 col-sm-4 col-6 text-center">
+                                <i class="i-Map-Marker text-32 text-primary"></i>
+                                <p class="text-16 mt-1"><b>Lot Size</b></p>
+                                <p class="text-16 mt-1">{{selectedReservation.lot.size}}m²</p>
+                            </div>
+                            <div class="col-md-2 col-sm-4 col-6 text-center">
+                                <i class="i-Map text-32 text-primary"></i>
+                                <p class="text-16 mt-1"><b>Lot Type</b></p>
+                                <p class="text-16 mt-1">{{selectedReservation.lot.type}}</p>
+                            </div>
+                            <div class="col-md-2 col-sm-4 col-6 text-center">
+                                <i class="i-Money-2 text-32 text-primary"></i>
+                                <p class="text-16 mt-1"><b>Total Price</b></p>
+                                <p class="text-16 mt-1">{{selectedReservation.housePrice + selectedReservation.lotPrice | currency: 'PHP' : 'symbol'}}</p>
+                            </div>
+                        </div>
+                    </ng-template>
+                </li>
+<!--                <li ngbNavItem title="Checklist">-->
+<!--                    <a ngbNavLink>Checklist</a>-->
+<!--                    <ng-template ngbNavContent>-->
+<!--                        <div class="row">-->
+<!--                            <div class="col-md-3">-->
+<!--                                <div class="card card-profile-1 mb-4">-->
+<!--                                    <div class="card-body text-center">-->
+<!--                                        <div class="avatar box-shadow-2 mb-3">-->
+<!--                                            <img src="assets/images/faces/16.jpg" alt="">-->
+<!--                                        </div>-->
+<!--                                        <h5 class="m-0">Jassica Hike</h5>-->
+<!--                                        <p class="mt-0">UI/UX Designer</p>-->
+<!--                                        <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Recusandae cumque.-->
+<!--                                        </p>-->
+<!--                                        <button class="btn btn-primary btn-rounded">Contact Jassica</button>-->
+<!--                                        <div class="card-socials-simple mt-4">-->
+<!--                                            <a href="">-->
+<!--                                                <i class="i-Linkedin-2"></i>-->
+<!--                                            </a>-->
+<!--                                            <a href="">-->
+<!--                                                <i class="i-Facebook-2"></i>-->
+<!--                                            </a>-->
+<!--                                            <a href="">-->
+<!--                                                <i class="i-Twitter"></i>-->
+<!--                                            </a>-->
+<!--                                        </div>-->
+<!--                                    </div>-->
+<!--                                </div>-->
+<!--                            </div>-->
+
+<!--                            <div class="col-md-3">-->
+<!--                                <div class="card card-profile-1 mb-4">-->
+<!--                                    <div class="card-body text-center">-->
+<!--                                        <div class="avatar box-shadow-2 mb-3">-->
+<!--                                            <img src="assets/images/faces/2.jpg" alt="">-->
+<!--                                        </div>-->
+<!--                                        <h5 class="m-0">Frank Powell</h5>-->
+<!--                                        <p class="mt-0">UI/UX Designer</p>-->
+<!--                                        <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Recusandae cumque.-->
+<!--                                        </p>-->
+<!--                                        <button class="btn btn-primary btn-rounded">Contact Frank</button>-->
+<!--                                        <div class="card-socials-simple mt-4">-->
+<!--                                            <a href="">-->
+<!--                                                <i class="i-Linkedin-2"></i>-->
+<!--                                            </a>-->
+<!--                                            <a href="">-->
+<!--                                                <i class="i-Facebook-2"></i>-->
+<!--                                            </a>-->
+<!--                                            <a href="">-->
+<!--                                                <i class="i-Twitter"></i>-->
+<!--                                            </a>-->
+<!--                                        </div>-->
+<!--                                    </div>-->
+<!--                                </div>-->
+<!--                            </div>-->
+
+<!--                            <div class="col-md-3">-->
+<!--                                <div class="card card-profile-1 mb-4">-->
+<!--                                    <div class="card-body text-center">-->
+<!--                                        <div class="avatar box-shadow-2 mb-3">-->
+<!--                                            <img src="assets/images/faces/3.jpg" alt="">-->
+<!--                                        </div>-->
+<!--                                        <h5 class="m-0">Arthur Mendoza</h5>-->
+<!--                                        <p class="mt-0">UI/UX Designer</p>-->
+<!--                                        <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Recusandae cumque.-->
+<!--                                        </p>-->
+<!--                                        <button class="btn btn-primary btn-rounded">Contact Arthur</button>-->
+<!--                                        <div class="card-socials-simple mt-4">-->
+<!--                                            <a href="">-->
+<!--                                                <i class="i-Linkedin-2"></i>-->
+<!--                                            </a>-->
+<!--                                            <a href="">-->
+<!--                                                <i class="i-Facebook-2"></i>-->
+<!--                                            </a>-->
+<!--                                            <a href="">-->
+<!--                                                <i class="i-Twitter"></i>-->
+<!--                                            </a>-->
+<!--                                        </div>-->
+<!--                                    </div>-->
+<!--                                </div>-->
+
+<!--                            </div>-->
+
+<!--                            <div class="col-md-3">-->
+<!--                                <div class="card card-profile-1 mb-4">-->
+<!--                                    <div class="card-body text-center">-->
+<!--                                        <div class="avatar box-shadow-2 mb-3">-->
+<!--                                            <img src="assets/images/faces/4.jpg" alt="">-->
+<!--                                        </div>-->
+<!--                                        <h5 class="m-0">Jacqueline Day</h5>-->
+<!--                                        <p class="mt-0">UI/UX Designer</p>-->
+<!--                                        <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Recusandae cumque.-->
+<!--                                        </p>-->
+<!--                                        <button class="btn btn-primary btn-rounded">Contact Jacqueline</button>-->
+<!--                                        <div class="card-socials-simple mt-4">-->
+<!--                                            <a href="">-->
+<!--                                                <i class="i-Linkedin-2"></i>-->
+<!--                                            </a>-->
+<!--                                            <a href="">-->
+<!--                                                <i class="i-Facebook-2"></i>-->
+<!--                                            </a>-->
+<!--                                            <a href="">-->
+<!--                                                <i class="i-Twitter"></i>-->
+<!--                                            </a>-->
+<!--                                        </div>-->
+<!--                                    </div>-->
+<!--                                </div>-->
+
+<!--                            </div>-->
+<!--                        </div>-->
+<!--                    </ng-template>-->
+<!--                </li>-->
+                <li ngbNavItem title="Documents">
+                    <h3><a ngbNavLink>Documents</a></h3>
+
+                    <ng-template ngbNavContent>
+                        <div class="row">
+                            <div class="col-md-6" *ngFor="let document of reservationDocuments">
+                                <div class="card text-white o-hidden mb-3">
+                                    <img class="card-img" src="https://rockville-fs.s3.ap-southeast-2.amazonaws.com/{{document.filePath}}" alt="">
+                                    <div class="card-img-overlay-light">
+                                        <div class="p-1 text-left card-footer font-weight-light d-flex">
+                                        <span class="me-3 d-flex align-items-center">
+                                            <i class="i-File-Pictures me-1"></i>{{document.requirementCode}}</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row mb-4">
+                            <!-- GRID AND LIST BUTTONS -->
+                            <div class="col-6">
+                                <button class="btn btn-sm btn-rounded btn-outline-light btn-svg me-2" [ngClass]="{active: viewMode === 'grid'}" (click)="viewMode = 'grid'">
+                                    <svg version="1.1" width="16px" id="grid" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+                                         x="0px" y="0px" viewBox="0 0 369.946 369.946" style="enable-background:new 0 0 369.946 369.946;" xml:space="preserve">
+        <path d="M250.609,0h-11.934H131.271h-11.934H0v119.337v11.934v107.404v11.934v119.337h119.337h11.934
+            h107.404h11.934h119.337V250.609v-11.934V131.271v-11.934V0H250.609z M238.675,11.934v107.404H131.271V11.934H238.675z
+             M238.675,131.271v107.404H131.271V131.271H238.675z M11.934,11.934h107.404v107.404H11.934V11.934z M11.934,131.271h107.404
+            v107.404H11.934V131.271z M11.934,358.012V250.609h107.404v107.404H11.934z M131.271,358.012V250.609h107.404v107.404H131.271z
+             M358.012,358.012H250.609V250.609h107.404V358.012z M358.012,238.675H250.609V131.271h107.404V238.675z M250.609,119.337V11.934
+            h107.404v107.404H250.609z" />
+      </svg>
+                                </button>
+                                <button class="btn btn-sm btn-rounded btn-outline-light btn-svg" [ngClass]="{active: viewMode === 'list'}" (click)="viewMode = 'list'">
+                                    <svg version="1.1" id="list" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px"
+                                         y="0px" width="16px" height="16px" viewBox="0 0 612 612" style="enable-background:new 0 0 612 612;" xml:space="preserve">
+        <path d="M0,97.92v24.48h612V97.92H0z M0,318.24h612v-24.48H0V318.24z M0,514.08h612V489.6H0V514.08z" />
+      </svg>
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- DATA LIST -->
+                        <div class="row" [ngClass]="{'list-horizontal': viewMode === 'list', 'list-grid': viewMode === 'grid'}">
+                            <!-- SINGLE LIST ITEM -->
+                            <div *ngFor="let document of reservationDocuments; let i = index"
+                                 class="list-item"
+                                 [ngClass]="{'col-md-12': viewMode === 'list', 'col-xxl-4 col-lg-6 col-md-12': viewMode === 'grid'}">
+                                <div class="card o-hidden mb-4 d-flex" [ngClass]="{'flex-row': viewMode === 'list', 'flex-column': viewMode === 'grid'}">
+                                    <div class="list-thumb d-flex">
+                                        <img src="https://rockville-fs.s3.ap-southeast-2.amazonaws.com/{{document.filePath}}" alt="">
+                                    </div>
+                                    <div class="flex-grow-1" [ngClass]="{'pl-2 d-flex': viewMode === 'list', 'd-block': viewMode === 'grid'}">
+                                        <div class="card-body align-self-center d-flex flex-column justify-content-between align-items-lg-center"
+                                             [ngClass]="{'flex-lg-row': viewMode === 'list'}">
+                                            <!-- OTHER DATA -->
+                                            <b href="" class="w-40 w-sm-100">
+                                                <div class="item-title">{{document.requirementName}}</div>
+                                            </b>
+                                            <p class="m-0 text-muted text-small w-15 w-sm-100">{{document.requirementCode}}</p>
+                                            <div class="row">
+                                                <div class="col-6">
+                                                    test
+                                                </div>
+                                                <div class="col-6">
+                                                    test
+                                                </div>
+                                            </div>
+                                            <p class="m-0 text-muted text-small w-15 w-sm-100">
+
+                                                <del class="text-secondary">Price</del>
+                                            </p>
+                                            <p class="m-0 text-muted text-small w-15 w-sm-100 d-none d-lg-block item-badges">
+                                                <span class="badge badge-danger">Test</span>
+                                            </p>
+                                            <p class="m-0 text-muted text-small w-15 w-sm-100 d-none d-lg-block item-actions">
+                                                <button class="btn btn-icon bg-transparent"
+                                                        [ngClass]="{'d-none': viewMode === 'grid'}">
+                                                    <i class="i-File-Edit text-16 text-primary"></i>
+                                                </button>
+                                                <button class="btn btn-success bg-transparent btn-rounded m-1" type="button"
+                                                        [ngClass]="{'d-none': viewMode === 'list'}">
+                                                    Update
+                                                </button>
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </ng-template>
+                </li>
+                <li ngbNavItem title="History">
+                    <h3><a ngbNavLink>History</a></h3>
+                    <ng-template ngbNavContent>
+                        <ul class="timeline clearfix">
+                            <li class="timeline-line"></li>
+                            <li class="timeline-item" *ngFor="let history of reservationHistory.slice(0, reservationHistory.length-1)">
+                                <div class="timeline-badge">
+                                    <i class="badge-icon bg-primary text-white i-File-Pictures" *ngIf="history.type === 'Reservation Document'"></i>
+                                </div>
+                                <div class="timeline-card card" *ngIf="history.document !== undefined">
+                                    <div class="card-body">
+                                        <div class="mb-1">
+                                            <strong class="me-1">{{history.createdBy}}</strong> {{history.action}} {{history.type}} ({{history.document.requirementCode}})
+                                            <p class="text-muted"><i class="text-20 i-Clock-Back"></i> {{history.createdAt*1000 | relativeTime}}</p>
+                                        </div>
+                                        <img class="rounded mb-2" src="https://rockville-fs.s3.ap-southeast-2.amazonaws.com/{{history.document.filePath}}" alt="">
+                                    </div>
+                                </div>
+                            </li>
+                        </ul>
+                        <ul class="timeline clearfix">
+                            <li class="timeline-line"></li>
+                            <li class="timeline-group text-center">
+                                <button class="btn btn-icon-text btn-success text-white"><i class="i-Calendar-4"></i> Created in {{reservationHistory[reservationHistory.length-1].createdAt * 1000 | date : 'MMMM dd yyyy hh:mm:ss'}}</button>
+                            </li>
+                        </ul>
+                    </ng-template>
+                </li>
+            </ul>
+            <div [ngbNavOutlet]="nav"></div>
+        </div>
+    </div>
+    <div class="row p-3">
+        <div class="col-12 btn-group">
+            <button type="button" class="btn btn-outline-success" (click)="modal.dismiss('Cross click')">Close</button>
+        </div>
+    </div>
+</ng-template>
+
